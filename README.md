@@ -1,5 +1,7 @@
 # Nayan Bhut — personal site
 
+Live at **https://nayanbhut.github.io**
+
 A Jekyll site for GitHub Pages. No build pipeline beyond Jekyll; no JavaScript
 dependencies.
 
@@ -52,12 +54,27 @@ Alternatively `bundle exec jekyll serve` if you add a Gemfile later.
 grep -rl "resume.pdf?v=" . --include="*.html"
 ```
 
-## Publishing to GitHub Pages
+## Publishing changes
 
-1. Create a public repository named `NayanBhut.github.io`.
-2. Push these files to the `main` branch.
-3. Settings → Pages → Source: **Deploy from a branch** → `main` / `/ (root)`.
-4. Wait for the Pages build, then open https://nayanbhut.github.io.
+The repository is already wired up:
+
+- Repo: https://github.com/NayanBhut/NayanBhut.github.io (public)
+- Pages source: **Deploy from a branch** → `main` / `/ (root)`
+- Live: https://nayanbhut.github.io
+
+To publish an edit:
+
+```sh
+git add -A
+git commit -m "Update experience section"
+git push
+```
+
+GitHub Pages rebuilds in about 40 seconds. Check the build with:
+
+```sh
+gh api repos/NayanBhut/NayanBhut.github.io/pages/builds/latest --jq .status
+```
 
 GitHub Pages builds Jekyll automatically. There is no Actions workflow to
 maintain. Do **not** add `.nojekyll`, or Liquid layouts stop rendering.
