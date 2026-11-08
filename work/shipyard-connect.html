@@ -1,12 +1,12 @@
 ---
 layout: work
-title: TestFlight Release Notes
-kicker: Developer tool · macOS
-summary: "A native SwiftUI client for the App Store Connect API that turns release day from a browser checklist into one window."
-role: Independent project
-platform: macOS · SwiftUI · Open source
-link: https://github.com/NayanBhut/TestFlightReleaseNotes
-link_label: View the source
+title: Shipyard Connect for ASC
+kicker: Developer tool · Mac App Store
+summary: "A native SwiftUI client for the App Store Connect API — live on the Mac App Store, and the tool I use to prepare every release."
+role: Developer and maintainer
+platform: macOS 15+ · Mac App Store
+link: https://apps.apple.com/us/app/shipyard-connect-for-asc/id6820384178?mt=12
+link_label: View on the Mac App Store
 tags:
   - SwiftUI
   - Swift 6
@@ -14,7 +14,7 @@ tags:
   - JSON:API
   - Keychain
   - XCTest
-permalink: /work/testflight-release-notes/
+permalink: /work/shipyard-connect/
 ---
 <h2>The problem</h2>
 
@@ -32,6 +32,11 @@ permalink: /work/testflight-release-notes/
 </p>
 
 <h2>What I built</h2>
+
+<p>
+  Shipyard Connect for ASC is a free macOS 15+ app on the Mac App Store. It is the shipping
+  version of the tool I use to prepare releases for the retail apps in my day job.
+</p>
 
 <ul>
   <li>A native macOS app that browses apps, pre-release versions and TestFlight builds.</li>
@@ -84,9 +89,19 @@ permalink: /work/testflight-release-notes/
   237k-character PR</a>.
 </p>
 
+<h3>Ship it, then keep the source open</h3>
+<p>
+  The app went through App Review and reached the Mac App Store as version 1.0 on
+  <strong>4 November 2026</strong>. The repository stays public: the build workflow, the review
+  automation and the release checklist are all visible, and the merged pull requests below are the
+  real review trail behind the shipped binary.
+</p>
+
 <h2>Results</h2>
 
 <ul>
+  <li><strong>Live on the Mac App Store</strong> — version 1.0, released 4 November 2026, free,
+    macOS 15 or later.</li>
   <li><strong>50 locales</strong> updated in a single Save All pass, with a completeness check.</li>
   <li>Build state watched every <strong>120 seconds</strong>, with local notifications instead of
     manual refreshes.</li>
@@ -98,7 +113,8 @@ permalink: /work/testflight-release-notes/
 
 <div class="callout">
   <p>
-    <strong>Status:</strong> in development, preparing the 1.0 App Store release. The source is
-    public, and the merged PRs above are the real review trail.
+    <strong>Status:</strong> shipped and maintained. Version 1.0 has been on the Mac App Store
+    since 4 November 2026, and the source is public at
+    <a href="https://github.com/NayanBhut/TestFlightReleaseNotes" target="_blank" rel="noopener">github.com/NayanBhut/TestFlightReleaseNotes</a>.
   </p>
 </div>
