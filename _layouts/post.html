@@ -1,0 +1,24 @@
+---
+layout: default
+---
+<article class="post">
+  <header class="post-head">
+    <div class="wrap-narrow">
+      <a class="back-link" href="{{ '/blog/' | relative_url }}"><span aria-hidden="true">←</span> All writing</a>
+      <p class="eyebrow">{{ page.date | date: "%B %-d, %Y" }} · {{ content | number_of_words | divided_by: 200 | plus: 1 }} min read</p>
+      <h1>{{ page.title }}</h1>
+      {% if page.description %}<p class="post-lede">{{ page.description }}</p>{% endif %}
+    </div>
+  </header>
+
+  <div class="wrap-narrow">
+    <div class="prose">
+      {{ content }}
+    </div>
+
+    <div class="post-footer">
+      <p>Written by <a href="{{ '/' | relative_url }}">Nayan Bhut</a>, senior iOS engineer. If this was useful, <a href="https://github.com/NayanBhut" target="_blank" rel="noopener">say hello on GitHub</a>.</p>
+      <a class="back-link" href="{{ '/blog/' | relative_url }}"><span aria-hidden="true">←</span> All writing</a>
+    </div>
+  </div>
+</article>

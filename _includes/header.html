@@ -1,0 +1,55 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" data-header>
+  <div class="header-inner wrap">
+    <a class="brand" href="{{ '/' | relative_url }}" aria-label="Nayan Bhut — home">
+      <span class="brand-mark" aria-hidden="true">NB</span>
+      <span class="brand-name">Nayan Bhut</span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      <a href="{{ '/#about' | relative_url }}">About</a>
+      <a href="{{ '/#experience' | relative_url }}">Experience</a>
+      <a href="{{ '/#projects' | relative_url }}">Projects</a>
+      <a href="{{ '/#open-source' | relative_url }}">Open source</a>
+      <a href="{{ '/blog/' | relative_url }}"{% if page.url contains '/blog/' %} aria-current="page"{% endif %}>Blog</a>
+      <a href="{{ '/#contact' | relative_url }}">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-small btn-quiet header-resume" href="{{ '/resume.pdf' | relative_url }}?v=2026-11-08" target="_blank" rel="noopener">
+        {% include icon.html name="doc" %}<span>Résumé</span>
+      </a>
+      <a class="icon-btn header-github" href="https://github.com/NayanBhut" target="_blank" rel="noopener" aria-label="GitHub profile (opens in a new tab)">
+        {% include icon.html name="github" %}
+      </a>
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme" title="Switch theme">
+        <span class="theme-icon theme-icon-sun" aria-hidden="true">{% include icon.html name="sun" %}</span>
+        <span class="theme-icon theme-icon-moon" aria-hidden="true">{% include icon.html name="moon" %}</span>
+      </button>
+      <button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+        <span class="nav-icon-open" aria-hidden="true">{% include icon.html name="menu" %}</span>
+        <span class="nav-icon-close" aria-hidden="true">{% include icon.html name="close" %}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav" data-mobile-nav hidden>
+    <nav aria-label="Mobile">
+      <a href="{{ '/#about' | relative_url }}"><span>About</span><span class="mobile-num">01</span></a>
+      <a href="{{ '/#experience' | relative_url }}"><span>Experience</span><span class="mobile-num">02</span></a>
+      <a href="{{ '/#projects' | relative_url }}"><span>Projects</span><span class="mobile-num">03</span></a>
+      <a href="{{ '/#open-source' | relative_url }}"><span>Open source</span><span class="mobile-num">04</span></a>
+      <a href="{{ '/blog/' | relative_url }}"><span>Blog</span><span class="mobile-num">05</span></a>
+      <a href="{{ '/#contact' | relative_url }}"><span>Contact</span><span class="mobile-num">06</span></a>
+    </nav>
+    <div class="mobile-nav-actions">
+      <a class="btn btn-primary" href="{{ '/resume.pdf' | relative_url }}?v=2026-11-08" target="_blank" rel="noopener">
+        {% include icon.html name="doc" %}<span>Résumé (PDF)</span>
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/NayanBhut" target="_blank" rel="noopener">
+        {% include icon.html name="github" %}<span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</header>

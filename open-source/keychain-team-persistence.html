@@ -1,0 +1,126 @@
+---
+layout: contribution
+title: "Stop Keychain prompts on every launch"
+description: "macOS kept asking for Keychain access and forgot the active team. The fix persists a team name — never a secret — and stops re-asking after a denial."
+status: Merged
+repo: NayanBhut/TestFlightReleaseNotes
+pr_number: 30
+pr_url: https://github.com/NayanBhut/TestFlightReleaseNotes/pull/30
+merged: 28 September 2026
+scope: +202 / −32 · 3 files
+permalink: /open-source/keychain-team-persistence/
+---
+<h2>The issue</h2>
+
+<p>
+  TestFlight Release Notes stores one App Store Connect API key per team. On macOS that means the
+  Keychain, and the app was behaving as if it had forgotten that fact. It asked for Keychain
+  access repeatedly, and after switching accounts it no longer knew which team was active.
+</p>
+
+<p>
+  The worst case was a denial: if someone declined the Keychain prompt, the app asked again on
+  the next launch. And the next. A permission decision that should have been remembered forever
+  was being re-litigated every time the app started.
+</p>
+
+<h2>Root cause</h2>
+
+<ul>
+  <li>
+    <strong>No persisted team.</strong> Login state was derived from the Keychain on launch, but
+    the last-selected team was never remembered, so the app had to rediscover it — and rediscovery
+    meant touching the Keychain again.
+  </li>
+  <li>
+    <strong>The legacy migration ran on every launch.</strong> The unscoped migration scan looked
+    for pre-sandbox credentials each time, even after it had succeeded. A denial did not stop it,
+    which is why the prompt kept coming back.
+  </li>
+  <li>
+    <strong>Credentials were decoded again on every switch.</strong> Moving back to a team already
+    used in the session hit the Keychain instead of a cache.
+  </li>
+  <li>
+    <strong>The team picker did not observe the selection.</strong> <code>selectedTeam</code> was
+    not <code>@Published</code>, so switching accounts could leave the picker showing stale state.
+  </li>
+  <li>
+    <strong>Duplicate items.</strong> A re-added team could briefly appear twice: its new item and
+    its orphaned pre-sandbox item shared the same name.
+  </li>
+</ul>
+
+<h2>The fix</h2>
+
+<ul>
+  <li>
+    Persist the <strong>name</strong> of the last-selected team in UserDefaults and restore it on
+    launch. Secrets never leave the Keychain; a name is not a secret.
+  </li>
+  <li>
+    Run the legacy migration <strong>once ever</strong>, and set the flag only after a successful
+    pass. Back off permanently on <code>errSecAuthFailed</code> /
+    <code>errSecInteractionNotAllowed</code>, so a denial is respected. Transient errors still
+    retry.
+  </li>
+  <li>
+    Cache decoded credentials per team, and keep a negative cache for unreadable teams so a denied
+    team is not re-queried — and the user is not re-prompted — for the rest of the session.
+  </li>
+  <li>
+    Make <code>selectedTeam</code> <code>@Published</code>; sort and dedupe the team list.
+  </li>
+  <li>
+    Add <code>kSecAttrSynchronizable=false</code> so API secrets never sync to iCloud Keychain,
+    and add a <code>keychain-access-groups</code> entitlement so a sandboxed app keeps a stable
+    identity across launches.
+  </li>
+</ul>
+
+<h2>Tests and verification</h2>
+
+<p>
+  This change is honest about what unit tests can and cannot prove. Keychain prompts need a signed,
+  sandboxed app and a real user decision, so the verification was a Swift build plus a live probe.
+</p>
+
+<ul>
+  <li>The Swift build passed.</li>
+  <li>
+    A live Keychain probe confirmed that existing items <em>without</em> the synchronizable
+    attribute still match the new query. That mattered: adding an attribute to a query can silently
+    orphan every credential already on disk.
+  </li>
+  <li>
+    The denied-prompt path is covered by state: the migration flag is only written after success,
+    and the denial branch is terminal for that install.
+  </li>
+</ul>
+
+<h2>Trade-offs</h2>
+
+<ul>
+  <li>
+    <strong>Storing a team name outside the Keychain</strong> is a deliberate split: convenience
+    data in UserDefaults, secrets in the Keychain. The alternative — storing the credential — would
+    have made the prompt problem worse, not better.
+  </li>
+  <li>
+    <strong>Permanent backoff after denial</strong> means a user who changes their mind may need to
+    reset the app's permission state. That is the right default: an ignored security prompt should
+    not nag.
+  </li>
+  <li>
+    <strong>Pre-sandbox items become invisible</strong> to the sandboxed build. The PR documents the
+    cleanup: delete the orphan with <code>security delete-generic-password</code> and re-add the
+    team once.
+  </li>
+</ul>
+
+<div class="callout">
+  <p>
+    <strong>Result:</strong> the active team is remembered across launches, credentials are read
+    once per session, and a denied prompt is never asked twice.
+  </p>
+</div>

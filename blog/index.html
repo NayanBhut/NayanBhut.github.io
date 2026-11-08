@@ -1,0 +1,22 @@
+---
+layout: page
+title: Writing
+kicker: Notes
+description: "Occasional notes on iOS engineering, release tooling and the unglamorous parts of shipping software."
+back_url: /
+back_label: Home
+permalink: /blog/
+---
+{% if site.posts.size > 0 %}
+<ul class="blog-list">
+  {% for post in site.posts %}
+  <li class="blog-item">
+    <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %-d, %Y" }}</time>
+    <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+    <p>{{ post.description | default: post.excerpt | strip_html }}</p>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="blog-empty">Nothing published yet. The first post is on its way.</p>
+{% endif %}

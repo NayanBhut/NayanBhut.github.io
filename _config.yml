@@ -1,0 +1,45 @@
+# Site settings — edit these if your details change.
+title: Nayan Bhut
+tagline: Senior iOS Engineer
+description: "Senior iOS engineer with 8+ years building Swift apps for Nike ME, Under Armour ME and Sun & Sand Sports. Available across India — remote or relocation."
+url: https://nayanbhut.github.io
+baseurl: ""
+
+author:
+  name: Nayan Bhut
+  email: nayanbhut989@gmail.com
+  github: NayanBhut
+  linkedin: nayan-bhut-4318b199
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+permalink: /blog/:title/
+timezone: Asia/Kolkata
+future: false
+
+kramdown:
+  input: GFM
+  syntax_highlighter_opts:
+    css_class: code
+
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: page
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - node_modules
+  - .github
+  - .DS_Store

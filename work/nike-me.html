@@ -1,0 +1,86 @@
+---
+layout: work
+title: Nike ME
+kicker: Retail · App Store
+summary: "A modular SwiftUI catalogue and checkout for a 1K+ product store — and a crash rate that fell from 2.1% to 0.3%."
+role: Senior iOS Developer
+timeframe: April 2024 – Present
+team: 6 developers
+platform: iOS · App Store
+link: https://apps.apple.com/ae/app/nike-sportswear-sneakers/id6444790147
+link_label: View on the App Store
+tags:
+  - Swift
+  - SwiftUI
+  - MVVM
+  - Apple Pay
+  - Firebase
+  - Time Profiler
+permalink: /work/nike-me/
+---
+<h2>The problem</h2>
+
+<p>
+  Nike ME is a regional sportswear store with a catalogue of more than a thousand products, a
+  bilingual Arabic/English interface and a full checkout. It is part of a retail portfolio
+  serving <strong>10K+ active users</strong>.
+</p>
+
+<p>
+  The app was crashing at a <strong>2.1% rate</strong>, and scrolling through large product lists
+  was not consistently smooth. Both symptoms pointed at the same place: too much work competing
+  for the main thread — decoding, image handling and view updates landing in the same frame budget
+  as scrolling.
+</p>
+
+<h2>What I built</h2>
+
+<ul>
+  <li>A modular MVVM app with SwiftUI-based product catalogue and checkout flows.</li>
+  <li>Apple Pay as a first-class payment path.</li>
+  <li>Arabic and English support across the shopping journey.</li>
+  <li>Main-thread profiling and optimisation of the product list, using Time Profiler to find
+    the heavy frames rather than guessing.</li>
+  <li>Firebase integration alongside the existing commerce stack.</li>
+</ul>
+
+<h2>Technical decisions</h2>
+
+<h3>Modular MVVM, not one large view model</h3>
+<p>
+  The catalogue, product detail and checkout were separated into modules with clear boundaries.
+  On a six-person team that mattered more than architectural purity: checkout work could proceed
+  while catalogue performance was being profiled, without the two efforts colliding in one large
+  view model.
+</p>
+
+<h3>Measure the frame budget, then move work off it</h3>
+<p>
+  The crash rate and the scrolling problem were treated as one performance issue. Time Profiler
+  showed where main-thread time was going; the fix was to keep expensive work — decoding, image
+  preparation, derived state — out of the scroll path and update the UI with only what a frame
+  needed. The result was a steady <strong>60 FPS while scrolling 1K+ products</strong>.
+</p>
+
+<h3>Bilingual from the start</h3>
+<p>
+  Arabic support was built into the layout and content model rather than bolted on at the end.
+  That avoids the usual retrofit problem where every screen needs a second pass for right-to-left
+  layout, truncation and mirrored navigation.
+</p>
+
+<h2>Results</h2>
+
+<ul>
+  <li>Crash rate reduced from <strong>2.1% to 0.3%</strong>.</li>
+  <li><strong>60 FPS</strong> scrolling across a 1K+ product catalogue.</li>
+  <li>Apple Pay and full Arabic/English support shipped.</li>
+  <li>Part of a three-app portfolio serving <strong>10K+ active users</strong>.</li>
+</ul>
+
+<div class="callout">
+  <p>
+    <strong>What I'd take from this:</strong> crash rates and jank are often the same bug wearing
+    two hats. Profiling before rewriting is what made the fix small enough to trust.
+  </p>
+</div>

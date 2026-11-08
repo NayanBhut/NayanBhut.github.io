@@ -1,0 +1,88 @@
+---
+layout: work
+title: Under Armour ME
+kicker: Retail · App Store
+summary: "Leading a three-person iOS team on personalisation, in-store experiences and 20+ production releases with zero critical post-release bugs."
+role: Lead iOS Developer
+timeframe: July 2022 – Present
+team: 3 developers
+platform: iOS · App Store
+link: https://apps.apple.com/ae/app/under-armour-me-shop-online/id1591394964
+link_label: View on the App Store
+tags:
+  - Swift
+  - MVVM
+  - Combine
+  - Branch
+  - MoEngage
+  - Salesforce
+  - GA4
+permalink: /work/under-armour-me/
+---
+<h2>The problem</h2>
+
+<p>
+  Under Armour ME needed to behave like a modern retail app, not a catalogue with a checkout
+  attached. That meant personalised recommendations, a reason to open the app inside a store, and
+  regional payment options — while marketing changed campaigns far more often than the App Store
+  review cycle allows.
+</p>
+
+<p>
+  The app also had to report the same conversions consistently to Branch, MoEngage and Google
+  Analytics 4 — three SDKs with three different event vocabularies.
+</p>
+
+<h2>What I built</h2>
+
+<ul>
+  <li>Personalised product recommendations and QR scanning.</li>
+  <li>Location-based in-store experiences.</li>
+  <li>An analytics layer capturing <strong>20+ conversion events</strong> across Branch, MoEngage
+    and Google Analytics 4.</li>
+  <li>Tabby and Tamara buy-now-pay-later gateways.</li>
+  <li>Salesforce customer-support chat inside the app.</li>
+  <li>CMS-driven banners, so marketing could change promotions without an App Store submission.</li>
+</ul>
+
+<h2>Technical decisions</h2>
+
+<h3>Put campaign content behind the CMS</h3>
+<p>
+  The highest-leverage change was not a feature. Moving banners and promotional content to a
+  CMS-driven model removed the App Store from the marketing critical path. A campaign could go
+  live on the brand's schedule, not Apple's review queue.
+</p>
+
+<h3>One event vocabulary across three SDKs</h3>
+<p>
+  Branch, MoEngage and GA4 each want to describe the same user action. Rather than let every
+  screen call every SDK directly, the app defined the conversion events once and mapped them to
+  each partner. That kept the 20+ event catalogue consistent and made it possible to add an event
+  without touching three call sites.
+</p>
+
+<h3>Release discipline as a feature</h3>
+<p>
+  Shipping 20+ production releases with zero critical post-release bugs is not luck; it is a
+  process. Small, reviewable changes, a repeatable release checklist and a short window between
+  "works on my machine" and "works in the store" are what made that number possible.
+</p>
+
+<h2>Results</h2>
+
+<ul>
+  <li><strong>20+ production releases</strong> with zero critical post-release bugs.</li>
+  <li><strong>20+ conversion events</strong> tracked across three analytics partners.</li>
+  <li>Marketing promotions shipped through the CMS — no App Store submission required.</li>
+  <li>BNPL, support chat and in-store experiences delivered in one app.</li>
+  <li>Led a team of three iOS developers.</li>
+</ul>
+
+<div class="callout">
+  <p>
+    <strong>What I'd take from this:</strong> the most valuable release-engineering work is often
+    invisible to users. Removing a dependency on the review queue changed what the business could
+    do, not just how fast the team could ship.
+  </p>
+</div>

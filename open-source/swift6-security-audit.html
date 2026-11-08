@@ -1,0 +1,131 @@
+---
+layout: contribution
+title: "A Swift 6 concurrency and security audit"
+description: "Twenty-one files of audit findings: actor isolation, Sendable boundaries, SHA-256 JWT cache keys and five new certificate-request tests."
+status: Merged
+repo: NayanBhut/TestFlightReleaseNotes
+pr_number: 31
+pr_url: https://github.com/NayanBhut/TestFlightReleaseNotes/pull/31
+merged: 29 September 2026
+scope: +574 / −350 · 21 files
+permalink: /open-source/swift6-security-audit/
+---
+<h2>The issue</h2>
+
+<p>
+  The app targets Swift 6, where data-race safety is enforced by the compiler rather than
+  documented in comments. A multi-pass review — concurrency, security, API correctness and macOS
+  patterns — turned up a set of issues that compiled but were not safe: a lock held across an
+  <code>await</code>, a cache keyed by a value that changes every process, and a JWT timestamp
+  format Apple does not accept.
+</p>
+
+<p>
+  The goal was not a rewrite. It was to fix verified findings, keep the public API contract the
+  same, and prove the app still built and tested.
+</p>
+
+<h2>Root cause</h2>
+
+<ul>
+  <li>
+    <strong>An <code>NSLock</code> across <code>await</code>.</strong> The app-icon cache guarded a
+    dictionary with a lock, then suspended inside the critical section. That is a deadlock risk and
+    a <code>Sendable</code> violation; an <code>actor</code> is the correct tool.
+  </li>
+  <li>
+    <strong>The JWT cache key used <code>String.hashValue</code>.</strong> Swift randomises string
+    hashing per process, so the "cache" was effectively a new namespace on every launch.
+  </li>
+  <li>
+    <strong>Fractional <code>exp</code>.</strong> The JWT expiry was a <code>TimeInterval</code>;
+    App Store Connect expects integer epoch seconds.
+  </li>
+  <li>
+    <strong>Keychain scope mismatch.</strong> The list query did not include
+    <code>kSecAttrSynchronizableAny</code>, so it could see a different item set than the base
+    query used for writes and reads.
+  </li>
+  <li>
+    <strong>Wrong isolation on UI state.</strong> Several view models and navigation objects mutate
+    UI state without an explicit <code>@MainActor</code> boundary.
+  </li>
+</ul>
+
+<h2>The fix</h2>
+
+<ul>
+  <li>
+    <strong>Concurrency:</strong> the icon cache became an <code>actor</code>; UI-bound types and
+    <code>APIClient.getRequest</code> became <code>@MainActor</code>; the JWT date provider became
+    <code>@Sendable</code>; per-call formatters replaced non-<code>Sendable</code> static ones.
+  </li>
+  <li>
+    <strong>Security:</strong> SHA-256 replaced <code>hashValue</code> for the JWT cache key;
+    private-key normalisation moved into one place so pasted and imported keys behave identically;
+    <code>exp</code> became integer epoch seconds; the Keychain list query now matches the base
+    query scope.
+  </li>
+  <li>
+    <strong>Privacy:</strong> a <code>curl</code> debug fallback now redacts the raw value when
+    percent-decoding fails, instead of printing it.
+  </li>
+  <li>
+    <strong>API duplication:</strong> shared error construction and localisation fetching replaced
+    two copy-pasted implementations; pagination dedupes by id; 21 encode-only request structs use
+    <code>var</code> so they stop warning.
+  </li>
+  <li>
+    <strong>UI:</strong> build rows became <code>Equatable</code> to skip needless re-renders;
+    notification history is an ordered list with oldest-first eviction instead of
+    <code>removeAll()</code>; the icon view exposes loading, loaded and failed states to
+    VoiceOver.
+  </li>
+  <li>
+    <strong>CSR upload:</strong> the paste-only text editor became a file picker, with the parsing
+    and error mapping extracted into a testable loader.
+  </li>
+</ul>
+
+<h2>Tests</h2>
+
+<ul>
+  <li>Five new unit tests for CSR loading: valid file, non-CSR file, empty file, missing file and
+    user-facing error messages.</li>
+  <li><code>xcodebuild build</code> → <strong>BUILD SUCCEEDED</strong>, with zero warnings in the
+    touched files.</li>
+  <li><code>xcodebuild build-for-testing</code> → <strong>TEST BUILD SUCCEEDED</strong>.</li>
+  <li><code>plutil -lint project.pbxproj</code> → OK.</li>
+</ul>
+
+<h2>Trade-offs</h2>
+
+<ul>
+  <li>
+    <strong><code>@unchecked Sendable</code> on <code>APIClient</code></strong> is a promise the
+    compiler cannot verify. It was kept only where the underlying state is immutable or externally
+    synchronised; converting the whole client to an actor would have rippled through every caller
+    for no correctness gain.
+  </li>
+  <li>
+    <strong><code>@MainActor</code> on <code>CredentialStorage</code></strong> makes the
+    thread model explicit but constrains future callers: Keychain work now has to be reached from
+    the main actor. For an app whose credentials are only read around UI actions, that is the
+    simpler contract.
+  </li>
+  <li>
+    <strong>SHA-256 for a cache key</strong> costs a little CPU per request. Hashing is negligible
+    next to a network call, and a stable key is the difference between a cache and a leak.
+  </li>
+  <li>
+    <strong>File picker instead of paste</strong> removes a convenience for people who kept the CSR
+    in a note. The file is the artefact Apple issues; asking for it directly is less error-prone.
+  </li>
+</ul>
+
+<div class="callout">
+  <p>
+    <strong>Result:</strong> 21 files changed, the Swift 6 build is clean in the touched code, and
+    the audit's highest-risk findings are covered by compiler checks or tests.
+  </p>
+</div>

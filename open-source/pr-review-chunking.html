@@ -1,0 +1,118 @@
+---
+layout: contribution
+title: "Review every line of a 237k-character PR"
+description: "The automated review truncated diffs at 200k characters and silently skipped the tail. File-boundary chunking made coverage complete — without changing the pipeline's contract."
+status: Merged
+repo: NayanBhut/TestFlightReleaseNotes
+pr_number: 22
+pr_url: https://github.com/NayanBhut/TestFlightReleaseNotes/pull/22
+merged: 22 September 2026
+scope: +1,245 / −76 · 3 files
+permalink: /open-source/pr-review-chunking/
+---
+<h2>The issue</h2>
+
+<p>
+  Every pull request in the repository runs through an LLM review step. It is useful enough that
+  people read it before merging — which made the failure mode dangerous rather than cosmetic: the
+  workflow truncated the diff at <strong>200,000 characters</strong>.
+</p>
+
+<p>
+  On a 237,000-character PR it dropped the last ~37,000 characters. The review came back looking
+  complete. The tail — a view-model, a sidebar view and tests — was never seen. A reviewer cannot
+  tell the difference between "no findings" and "never looked".
+</p>
+
+<h2>Root cause</h2>
+
+<p>
+  Truncation happened inline in the workflow, before the review script ran. There was a single
+  size guard and no concept of coverage: anything past the limit was cut, and nothing recorded
+  that it had been cut. The script itself had one input and one API call, so a large PR had no
+  path to being reviewed in parts.
+</p>
+
+<h2>The fix</h2>
+
+<ul>
+  <li>
+    <strong>Filter noise first.</strong> Docs, Markdown and Xcode project files
+    (<code>.xcodeproj</code>, <code>pbxproj</code>, schemes) are removed before chunking. They are
+    large, generated or prose — not source worth spending review tokens on.
+  </li>
+  <li>
+    <strong>Chunk on file boundaries.</strong> The remaining diff is split into chunks of at most
+    150,000 characters, by default, and never mid-file. An oversized single file becomes its own
+    whole chunk rather than being cut in half.
+  </li>
+  <li>
+    <strong>Carry findings forward.</strong> Each chunk gets its own API call. Previous chunks'
+    findings are passed as context so the model adds new findings instead of repeating old ones.
+    Output is combined under <code>### Review part N/M (files: …)</code>.
+  </li>
+  <li>
+    <strong>Fail loudly, never silently.</strong> A chunk failure after earlier successes fails
+    the run but still prints the earlier findings. A docs-only diff prints "No reviewable source
+    changes" and exits 0. If filtering or chunking would lose a <code>diff --git</code> header, the
+    script aborts.
+  </li>
+  <li>
+    <strong>Keep the contract.</strong> The same environment variables, output files, exit codes
+    and error prefixes still apply. <code>SKIP_PATH_PATTERNS</code> and
+    <code>MAX_CHARS_PER_CHUNK</code> are configurable without editing code.
+  </li>
+  <li>
+    <strong>Add <code>--dry-run</code>.</strong> It prints the chunk plan — count, sizes, file
+    lists — with no API key and no API call, so the plan can be inspected in CI or locally.
+  </li>
+</ul>
+
+<h2>Tests</h2>
+
+<ul>
+  <li>
+    A new <strong>325-line test suite</strong> for the chunking and filtering logic
+    (<code>.github/scripts/test_ollama_review.py</code>).
+  </li>
+  <li>
+    The PR reviewed itself. Its raw diff was <strong>237,777 characters</strong>; a local dry run
+    split it into two chunks (90,324 + 105,130 characters across 13 + 4 files) with 41,787
+    characters of noise filtered out.
+  </li>
+  <li>
+    All 22 raw-diff files were accounted for, and the files that were previously cut are now
+    covered.
+  </li>
+  <li>The Ollama Cloud PR review check passed on the PR.</li>
+</ul>
+
+<h2>Trade-offs</h2>
+
+<ul>
+  <li>
+    <strong>More API calls.</strong> A large PR now costs two or more requests instead of one, so
+    it is slower and more expensive. That is the price of actually reviewing the whole change.
+  </li>
+  <li>
+    <strong>Carry-over context is not free.</strong> Passing earlier findings forward consumes
+    tokens and can bias the model toward existing findings. It is still cheaper than re-reviewing
+    the same files from scratch.
+  </li>
+  <li>
+    <strong>File boundaries can exceed the limit.</strong> One enormous file cannot be split
+    without breaking diff syntax. The script accepts that and sends the file whole, which is safer
+    than a half-file review with missing line context.
+  </li>
+  <li>
+    <strong>Noise filtering is opinionated.</strong> Documentation changes will not be reviewed.
+    That is a deliberate default, and <code>SKIP_PATH_PATTERNS</code> makes it reversible.
+  </li>
+</ul>
+
+<div class="callout">
+  <p>
+    <strong>Result:</strong> coverage is complete for any PR size, and the pipeline says so when it
+    cannot review something instead of quietly truncating.
+  </p>
+</div>

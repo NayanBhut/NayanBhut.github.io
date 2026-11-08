@@ -1,0 +1,89 @@
+---
+layout: contribution
+title: "Fix a CI workflow that could not start"
+description: "A job-level env block used runner.temp, which only exists inside steps. The workflow failed before the first action ran."
+status: Merged
+repo: NayanBhut/Azure-PipeLine-Mobile
+pr_number: 12
+pr_url: https://github.com/NayanBhut/Azure-PipeLine-Mobile/pull/12
+merged: 26 October 2026
+scope: +8 / −2 · 1 file
+permalink: /open-source/ci-runner-context/
+---
+<h2>The issue</h2>
+
+<p>
+  The Android build workflow on <code>main</code> was invalid. GitHub Actions refused to start it:
+</p>
+
+<pre><code>Invalid workflow file: .github/workflows/CreateBuild.yml#L1
+(Line: 53, Col: 30): Unrecognized named-value: 'runner'</code></pre>
+
+<p>
+  The result was a <code>startup_failure</code> — not a failed build, but a workflow that never
+  ran a single step. Branches pushed by Dependabot also fell back to a file-path workflow name,
+  which made the failure harder to spot in the Actions list.
+</p>
+
+<h2>Root cause</h2>
+
+<p>
+  <code>runner.temp</code> was used in a <strong>job-level</strong> <code>env</code> block. The
+  <code>runner</code> context is only available inside steps, not while the job is being
+  configured. The workflow was syntactically plausible YAML and passed a casual read; GitHub
+  rejected it before execution.
+</p>
+
+<p>
+  The path was only used for a throwaway CI upload keystore, so the environment did not need to be
+  a runner path at all.
+</p>
+
+<h2>The fix</h2>
+
+<ul>
+  <li>
+    Replaced <code>runner.temp</code> with <code>github.workspace</code>, which is valid at job
+    level:
+    <code>ANDROID_KEYSTORE_PATH: {% raw %}${{ github.workspace }}{% endraw %}/ci-upload.keystore</code>.
+  </li>
+  <li>
+    The previous PR in the series had already moved the workflow to current action majors —
+    checkout v7, setup-node v7, setup-java v6, setup-gradle v6, setup-android v4,
+    upload-artifact v7 and cache v6 — and added job timeouts, a CocoaPods cache and a note about
+    the CocoaPods → SPM deprecation.
+  </li>
+</ul>
+
+<h2>Tests</h2>
+
+<ul>
+  <li><code>actionlint .github/workflows/CreateBuild.yml</code> passes.</li>
+  <li>The PR's own CI run validates the workflow end to end — the real proof, because the failure
+    mode was at workflow startup.</li>
+</ul>
+
+<h2>Trade-offs</h2>
+
+<ul>
+  <li>
+    <strong><code>github.workspace</code> is per-job.</strong> That is fine for a temporary
+    keystore that is created and discarded inside the job, but it would be wrong for an artefact
+    expected to survive between jobs.
+  </li>
+  <li>
+    <strong>No behavioural change to release signing.</strong> The same upload key is decoded into
+    the same kind of temporary file; only the directory expression changed.
+  </li>
+  <li>
+    <strong>Action major upgrades are separate.</strong> Keeping the version bumps in the previous
+    PR made this one a two-line fix that is easy to review and easy to revert.
+  </li>
+</ul>
+
+<div class="callout">
+  <p>
+    <strong>Result:</strong> the workflow starts again, Dependabot branches get a real CI run, and
+    the fix is verified by the workflow it repairs.
+  </p>
+</div>

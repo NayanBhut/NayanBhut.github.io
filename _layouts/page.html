@@ -1,0 +1,21 @@
+---
+layout: default
+---
+<section class="page-head">
+  <div class="wrap">
+    {% if page.back_url %}
+    <a class="back-link" href="{{ page.back_url | relative_url }}"><span aria-hidden="true">←</span> {{ page.back_label | default: "Back" }}</a>
+    {% endif %}
+    <p class="eyebrow">{{ page.kicker | default: "Nayan Bhut" }}</p>
+    <h1>{{ page.title }}</h1>
+    {% if page.description %}<p class="page-lede">{{ page.description }}</p>{% endif %}
+  </div>
+</section>
+
+<section class="page-body">
+  <div class="wrap">
+    <div class="prose">
+      {{ content }}
+    </div>
+  </div>
+</section>

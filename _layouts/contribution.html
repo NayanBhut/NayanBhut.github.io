@@ -1,0 +1,52 @@
+---
+layout: default
+---
+<article class="work-page">
+  <header class="work-hero">
+    <div class="wrap">
+      <a class="back-link" href="{{ '/#open-source' | relative_url }}"><span aria-hidden="true">←</span> Open source</a>
+      <p class="eyebrow">Open source · {{ page.status | default: "Merged" }}</p>
+      <h1>{{ page.title }}</h1>
+      <p class="work-summary">{{ page.description }}</p>
+
+      <dl class="work-meta">
+        {% if page.repo %}
+        <div><dt>Repository</dt><dd>{{ page.repo }}</dd></div>
+        {% endif %}
+        {% if page.pr_number %}
+        <div><dt>Pull request</dt><dd>#{{ page.pr_number }}</dd></div>
+        {% endif %}
+        {% if page.merged %}
+        <div><dt>Merged</dt><dd>{{ page.merged }}</dd></div>
+        {% endif %}
+        {% if page.scope %}
+        <div><dt>Scope</dt><dd>{{ page.scope }}</dd></div>
+        {% endif %}
+      </dl>
+
+      <div class="work-actions">
+        {% if page.pr_url %}
+        <a class="btn btn-primary" href="{{ page.pr_url }}" target="_blank" rel="noopener">
+          View the pull request {% include icon.html name="arrow-up-right" %}
+        </a>
+        {% endif %}
+        <a class="btn btn-secondary" href="https://github.com/{{ page.repo }}" target="_blank" rel="noopener">
+          {% include icon.html name="github" %} Repository
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="prose work-body">
+      {{ content }}
+    </div>
+  </div>
+
+  <nav class="work-next wrap" aria-label="More open source">
+    <a href="{{ '/#open-source' | relative_url }}">
+      <span class="eyebrow">More open source</span>
+      <span class="work-next-title">All contributions <span aria-hidden="true">→</span></span>
+    </a>
+  </nav>
+</article>

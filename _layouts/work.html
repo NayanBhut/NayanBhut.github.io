@@ -1,0 +1,56 @@
+---
+layout: default
+---
+<article class="work-page">
+  <header class="work-hero">
+    <div class="wrap">
+      <a class="back-link" href="{{ '/#projects' | relative_url }}"><span aria-hidden="true">←</span> All projects</a>
+      <p class="eyebrow">Case study{% if page.kicker %} · {{ page.kicker }}{% endif %}</p>
+      <h1>{{ page.title }}</h1>
+      <p class="work-summary">{{ page.summary }}</p>
+
+      <dl class="work-meta">
+        {% if page.role %}
+        <div><dt>Role</dt><dd>{{ page.role }}</dd></div>
+        {% endif %}
+        {% if page.timeframe %}
+        <div><dt>Timeline</dt><dd>{{ page.timeframe }}</dd></div>
+        {% endif %}
+        {% if page.team %}
+        <div><dt>Team</dt><dd>{{ page.team }}</dd></div>
+        {% endif %}
+        {% if page.platform %}
+        <div><dt>Platform</dt><dd>{{ page.platform }}</dd></div>
+        {% endif %}
+      </dl>
+
+      <div class="work-actions">
+        {% if page.link %}
+        <a class="btn btn-primary" href="{{ page.link }}" target="_blank" rel="noopener">
+          {{ page.link_label | default: "View live" }} {% include icon.html name="arrow-up-right" %}
+        </a>
+        {% endif %}
+        <a class="btn btn-secondary" href="{{ '/#contact' | relative_url }}">Get in touch</a>
+      </div>
+
+      {% if page.tags %}
+      <ul class="chips work-chips" aria-label="Technologies used">
+        {% for tag in page.tags %}<li>{{ tag }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="prose work-body">
+      {{ content }}
+    </div>
+  </div>
+
+  <nav class="work-next wrap" aria-label="More case studies">
+    <a href="{{ '/#projects' | relative_url }}">
+      <span class="eyebrow">More work</span>
+      <span class="work-next-title">All projects <span aria-hidden="true">→</span></span>
+    </a>
+  </nav>
+</article>

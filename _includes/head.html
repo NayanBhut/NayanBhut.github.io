@@ -1,0 +1,136 @@
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {%- if page.url == "/" -%}
+    {%- assign seo_title = site.title | append: " — " | append: site.tagline -%}
+  {%- elsif page.title -%}
+    {%- assign seo_title = page.title | append: " · " | append: site.title -%}
+  {%- else -%}
+    {%- assign seo_title = site.title -%}
+  {%- endif -%}
+  {%- assign seo_description = page.description | default: site.description -%}
+  {%- assign seo_image = page.image | default: "/assets/img/og.png" -%}
+
+  <title>{{ seo_title }}</title>
+  <meta name="description" content="{{ seo_description | escape }}">
+  <meta name="author" content="Nayan Bhut">
+  {%- if page.noindex %}
+  <meta name="robots" content="noindex, follow">
+  {%- else %}
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  {%- endif %}
+
+  <!-- Color scheme: follows the system unless the visitor picks a theme. -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+
+  <!-- Open Graph / link previews -->
+  <meta property="og:type" content="{% if page.collection == 'posts' %}article{% else %}website{% endif %}">
+  <meta property="og:site_name" content="{{ site.title }}">
+  <meta property="og:title" content="{{ seo_title | escape }}">
+  <meta property="og:description" content="{{ seo_description | escape }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:image" content="{{ seo_image | absolute_url }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Nayan Bhut — Senior iOS Engineer">
+  <meta property="og:locale" content="en_IN">
+  {%- if page.collection == 'posts' %}
+  <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
+  <meta property="article:author" content="Nayan Bhut">
+  {%- endif %}
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ seo_title | escape }}">
+  <meta name="twitter:description" content="{{ seo_description | escape }}">
+  <meta name="twitter:image" content="{{ seo_image | absolute_url }}">
+
+  <!-- Icons -->
+  <link rel="icon" href="{{ '/assets/img/favicon.svg' | relative_url }}" type="image/svg+xml">
+  <link rel="icon" href="{{ '/assets/img/favicon-32.png' | relative_url }}" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="{{ '/assets/img/apple-touch-icon.png' | relative_url }}">
+  <link rel="manifest" href="{{ '/site.webmanifest' | relative_url }}">
+
+  <!-- Apply a saved theme before first paint; no flash, no dependency on the bundle. -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      root.classList.add('js');
+      try {
+        var saved = localStorage.getItem('theme');
+        if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+      } catch (e) {}
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        root.classList.add('reduce-motion');
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}?v=2026-11-08">
+
+  {%- if page.url == "/" %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "{{ site.url }}/#person",
+        "name": "Nayan Bhut",
+        "jobTitle": "Senior iOS Software Engineer",
+        "description": {{ site.description | jsonify }},
+        "url": "{{ site.url }}/",
+        "email": "mailto:nayanbhut989@gmail.com",
+        "worksFor": { "@type": "Organization", "name": "Brainvire Infotech Pvt. Ltd." },
+        "alumniOf": { "@type": "CollegeOrUniversity", "name": "Government Engineering College, Modasa" },
+        "address": { "@type": "PostalAddress", "addressCountry": "IN" },
+        "sameAs": [
+          "https://github.com/NayanBhut",
+          "https://www.linkedin.com/in/nayan-bhut-4318b199"
+        ],
+        "knowsAbout": [
+          "Swift", "SwiftUI", "UIKit", "iOS development", "Swift concurrency",
+          "App Store Connect API", "MVVM", "VIPER", "XCTest", "fastlane", "GitHub Actions"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "{{ site.url }}/#website",
+        "url": "{{ site.url }}/",
+        "name": "Nayan Bhut — Senior iOS Engineer",
+        "description": {{ site.description | jsonify }},
+        "publisher": { "@id": "{{ site.url }}/#person" },
+        "inLanguage": "en"
+      }
+    ]
+  }
+  </script>
+  {%- elsif page.collection == 'posts' %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ page.title | jsonify }},
+    "description": {{ seo_description | jsonify }},
+    "datePublished": "{{ page.date | date_to_xmlschema }}",
+    "url": "{{ page.url | absolute_url }}",
+    "mainEntityOfPage": "{{ page.url | absolute_url }}",
+    "author": { "@type": "Person", "name": "Nayan Bhut", "url": "{{ site.url }}/" }
+  }
+  </script>
+  {%- elsif page.layout == 'work' %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": {{ page.title | jsonify }},
+    "description": {{ seo_description | jsonify }},
+    "url": "{{ page.url | absolute_url }}",
+    "author": { "@type": "Person", "name": "Nayan Bhut", "url": "{{ site.url }}/" },
+    "about": {{ page.role | default: "iOS engineering" | jsonify }}
+  }
+  </script>
+  {%- endif %}
+</head>
