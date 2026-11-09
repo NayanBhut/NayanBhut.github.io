@@ -9,7 +9,7 @@ link: https://apps.apple.com/us/app/shipyard-connect-for-asc/id6820384178?mt=12
 link_label: View on the Mac App Store
 tags:
   - SwiftUI
-  - Swift 6
+  - Strict concurrency
   - App Store Connect API
   - JSON:API
   - Keychain
@@ -71,9 +71,10 @@ permalink: /work/shipyard-connect/
   <a href="{{ '/open-source/keychain-team-persistence/' | relative_url }}">Keychain write-up</a>.
 </p>
 
-<h3>Swift 6 concurrency, enforced by the compiler</h3>
+<h3>Swift 6 concurrency rules, enforced by the compiler</h3>
 <p>
-  The app targets Swift 6, so isolation is checked rather than documented. The icon cache is an
+  The app builds with complete strict-concurrency checking, so isolation is enforced rather than
+  documented. The icon cache is an
   <code>actor</code> instead of an <code>NSLock</code> held across <code>await</code>; UI-bound
   state is <code>@MainActor</code>; JWT handling uses <code>Sendable</code> date providers. The
   audit that got it there touched 21 files and is written up as
@@ -105,8 +106,8 @@ permalink: /work/shipyard-connect/
   <li><strong>50 locales</strong> updated in a single Save All pass, with a completeness check.</li>
   <li>Build state watched every <strong>120 seconds</strong>, with local notifications instead of
     manual refreshes.</li>
-  <li><strong>37 merged pull requests</strong> in the public repository, including a Swift 6
-    concurrency audit and a Keychain persistence fix.</li>
+  <li><strong>37 merged pull requests</strong> in the public repository, including a strict-concurrency
+    audit and a Keychain persistence fix.</li>
   <li>Unit tests cover CSR loading and provisioning validation; the project builds with
     <code>build-for-testing</code> cleanly.</li>
 </ul>

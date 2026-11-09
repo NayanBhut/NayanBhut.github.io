@@ -1,6 +1,6 @@
 ---
 layout: contribution
-title: "A Swift 6 concurrency and security audit"
+title: "A strict-concurrency and security audit"
 description: "Twenty-one files of audit findings: actor isolation, Sendable boundaries, SHA-256 JWT cache keys and five new certificate-request tests."
 status: Merged
 repo: NayanBhut/TestFlightReleaseNotes
@@ -13,7 +13,8 @@ permalink: /open-source/swift6-security-audit/
 <h2>The issue</h2>
 
 <p>
-  The app targets Swift 6, where data-race safety is enforced by the compiler rather than
+  The app builds with complete strict-concurrency checking — the Swift 6 data-race rules — so
+  isolation is enforced by the compiler rather than
   documented in comments. A multi-pass review — concurrency, security, API correctness and macOS
   patterns — turned up a set of issues that compiled but were not safe: a lock held across an
   <code>await</code>, a cache keyed by a value that changes every process, and a JWT timestamp
@@ -125,7 +126,7 @@ permalink: /open-source/swift6-security-audit/
 
 <div class="callout">
   <p>
-    <strong>Result:</strong> 21 files changed, the Swift 6 build is clean in the touched code, and
+    <strong>Result:</strong> 21 files changed, the strict-concurrency build is clean in the touched code, and
     the audit's highest-risk findings are covered by compiler checks or tests.
   </p>
 </div>
