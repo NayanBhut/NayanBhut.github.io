@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "JSON:API is not JSON: resolving relationships you cannot see"
-description: "A JSON:API document is a flat list of resources plus type/id pointers. Expanding one level of included looks correct and often isn't — here is what recursive resolution has to survive, and what it found in a real production response."
+description: "A JSON:API document is a flat list of resources plus type/id pointers. Expanding one level of included looks correct and often isn't — what recursive resolution has to survive, which well-known APIs actually speak the format, and what it found in a real production response."
 date: 2026-11-21 12:00:00 +0530
 ---
 <p>
@@ -33,6 +33,57 @@ date: 2026-11-21 12:00:00 +0530
   That design is good. It avoids duplication, makes caching per resource possible, and keeps payloads
   predictable. It also means the tree you want exists only as an interpretation of pointers, and
   every tool that renders JSON:API has to make that interpretation explicitly — or quietly skip it.
+</p>
+
+<h2>Who actually speaks it</h2>
+
+<p>
+  This is not a niche format with one famous user. A handful worth knowing, in rough order of how
+  likely an iOS engineer is to meet them:
+</p>
+
+<ul>
+  <li>
+    <strong>App Store Connect.</strong> The one you will meet. Apple documents it as a REST API, but
+    its published OpenAPI spec — App Store Connect API 4.6.1, 1,032 paths — is JSON:API shaped:
+    resources carry <code>type</code>, <code>id</code>, <code>attributes</code> and
+    <code>relationships</code>, and 341 of its response schemas have an <code>included</code> array.
+    Builds, beta groups, beta testers, App Store versions and review submissions are all resources in
+    that graph, which is why a release tool is really a relationship walker. It also shows the format
+    in the wild: the spec defines no top-level <code>jsonapi</code> member, and responses are served
+    as <code>application/json</code> rather than <code>application/vnd.api+json</code> — the most
+    important API in the ecosystem is JSON:API shaped rather than strictly conformant.
+  </li>
+  <li>
+    <strong>Klaviyo.</strong> Rebuilt its public API on JSON:API in 2022 and wrote about the decision:
+    includes and sparse fieldsets gave it the compound-query benefits it wanted without adopting
+    GraphQL, and one envelope keeps 200+ endpoints consistent across teams. If you have ever received
+    a marketing automation webhook, you have probably parsed this format.
+  </li>
+  <li>
+    <strong>Patreon.</strong> Its docs say it outright: "Our API follows the JSON:API spec." Their own
+    documentation includes a hand-written loop that denormalizes <code>included</code> by following
+    <code>relationships</code> — the exact walk this post is about, written out because the envelope
+    is not going to do it for you.
+  </li>
+  <li>
+    <strong>Drupal.</strong> JSON:API ships in Drupal core, so a decoupled Drupal site returns it
+    without a contributed module — it is a first-class, documented way to decouple a Drupal site.
+  </li>
+  <li>
+    <strong>Ember Data and DataCite.</strong> Ember Data's <em>default</em> adapter is
+    <code>JSONAPIAdapter</code>; the format exists in large part because a frontend framework needed
+    a standard for relational payloads. DataCite's DOI metadata API follows it too, which is a useful
+    reminder that the format travels well beyond consumer apps — research infrastructure is one of
+    its steadiest homes.
+  </li>
+</ul>
+
+<p>
+  The contrast matters just as much. GitHub's REST API, Stripe and Shopify are <em>not</em> JSON:API;
+  they each ship their own envelope. So a generic JSON viewer is the wrong tool for the APIs that do
+  use it, and a JSON:API-specific one is wasted everywhere else. Knowing which is which is half the
+  work.
 </p>
 
 <h2>One level of expansion looks like it worked</h2>
