@@ -35,11 +35,11 @@ date: 2026-11-21 12:00:00 +0530
   every tool that renders JSON:API has to make that interpretation explicitly — or quietly skip it.
 </p>
 
-<h2>Who actually speaks it</h2>
+<h2>Who actually uses it</h2>
 
 <p>
-  This is not a niche format with one famous user. A handful worth knowing, in rough order of how
-  likely an iOS engineer is to meet them:
+  This is not a niche format with one famous user. These are the apps and APIs built on it, in rough
+  order of how likely an iOS engineer is to meet them:
 </p>
 
 <ul>
@@ -76,6 +76,13 @@ date: 2026-11-21 12:00:00 +0530
     a standard for relational payloads. DataCite's DOI metadata API follows it too, which is a useful
     reminder that the format travels well beyond consumer apps — research infrastructure is one of
     its steadiest homes.
+  </li>
+  <li>
+    <strong>Zooniverse.</strong> The citizen-science platform's Panoptes API documents
+    "JSON-API conventions" as its core model and ships official Python, JavaScript and Ruby clients.
+    The apps you might recognise — Galaxy Zoo, Snapshot Serengeti — talk to the server through this
+    same relationship graph, which is a reminder that the format is doing production work far outside
+    commerce.
   </li>
 </ul>
 
