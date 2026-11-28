@@ -30,9 +30,15 @@ layout: default
           View the pull request {% include icon.html name="arrow-up-right" %}
         </a>
         {% endif %}
+        {% if page.repo_url %}
+        <a class="btn btn-secondary" href="{{ page.repo_url }}" target="_blank" rel="noopener">
+          App Store {% include icon.html name="arrow-up-right" %}
+        </a>
+        {% else %}
         <a class="btn btn-secondary" href="https://github.com/{{ page.repo }}" target="_blank" rel="noopener">
           {% include icon.html name="github" %} Repository
         </a>
+        {% endif %}
       </div>
     </div>
   </header>
