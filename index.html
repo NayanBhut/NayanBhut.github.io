@@ -434,7 +434,8 @@ description: "Senior iOS engineer with 8+ years building Swift apps for Nike ME,
       <h2>Public work, in the open.</h2>
       <p>
         Merged pull requests from repositories I maintain — each with a write-up of the problem,
-        the fix, the tests and the trade-offs.
+        the fix, the tests and the trade-offs — plus a few contributions upstream to projects I
+        don't own.
       </p>
     </div>
 
@@ -498,6 +499,52 @@ description: "Senior iOS engineer with 8+ years building Swift apps for Nike ME,
         <div class="oss-side">
           <span class="status status-oss">Merged</span>
           <a class="read-link" href="{{ '/open-source/ci-runner-context/' | relative_url }}">Read write-up {% include icon.html name="arrow-right" %}</a>
+        </div>
+      </li>
+
+      <li class="oss-card" data-reveal>
+        <div>
+          <p class="oss-repo">neuml/txtai · PR #1692</p>
+          <h3><a href="https://github.com/neuml/txtai/pull/1692" target="_blank" rel="noopener">Search at least one block when nprobe is zero</a></h3>
+          <p>
+            A zero probe count silently scans no blocks. Clamped <code>nprobe</code> to one-or-more
+            so sparse vector search always returns results.
+          </p>
+        </div>
+        <div class="oss-side">
+          <span class="status status-upstream">Upstream</span>
+          <a class="read-link" href="https://github.com/neuml/txtai/pull/1692" target="_blank" rel="noopener">View PR {% include icon.html name="arrow-up-right" %}</a>
+        </div>
+      </li>
+
+      <li class="oss-card" data-reveal>
+        <div>
+          <p class="oss-repo">neuml/txtai · PR #1690</p>
+          <h3><a href="https://github.com/neuml/txtai/pull/1690" target="_blank" rel="noopener">Cap cluster count at the training-set size</a></h3>
+          <p>
+            A small index could request more clusters than rows and fail with
+            <code>n_samples ≥ n_clusters</code>. Capped <code>nlist</code> at the number of
+            training rows.
+          </p>
+        </div>
+        <div class="oss-side">
+          <span class="status status-upstream">Upstream</span>
+          <a class="read-link" href="https://github.com/neuml/txtai/pull/1690" target="_blank" rel="noopener">View PR {% include icon.html name="arrow-up-right" %}</a>
+        </div>
+      </li>
+
+      <li class="oss-card" data-reveal>
+        <div>
+          <p class="oss-repo">open-telemetry/opentelemetry-swift · PR #1307</p>
+          <h3><a href="https://github.com/open-telemetry/opentelemetry-swift/pull/1307" target="_blank" rel="noopener">Record error.type for stable HTTP errors</a></h3>
+          <p>
+            4xx/5xx responses now set <code>error.type</code> to the string status code and drop the
+            redundant description, with old-semconv behaviour unchanged. Tests for 200, 404 and 500.
+          </p>
+        </div>
+        <div class="oss-side">
+          <span class="status status-upstream">Upstream</span>
+          <a class="read-link" href="https://github.com/open-telemetry/opentelemetry-swift/pull/1307" target="_blank" rel="noopener">View PR {% include icon.html name="arrow-up-right" %}</a>
         </div>
       </li>
     </ul>
